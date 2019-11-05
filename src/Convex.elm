@@ -37,14 +37,14 @@ cH_bound a b c acc rest =
     case rightTurn a b c of
         True ->
             case rest of
-                [] -> List.reverse acc -- used as stack so far, now reverse for desired order
+                [] -> (List.reverse acc) ++ [a,b,c] -- used as stack so far, now reverse for desired order
                 [x] -> cH_bound b c x (a :: acc) []
                 (x::xs) -> cH_bound b c x (a :: acc) xs
         False ->
             case acc of
-                [] -> []
-                [x] -> cH_bound a b x [] rest
-                (x::xs) -> cH_bound a b x xs rest
+                [] -> [a, c]
+                [prev] -> cH_bound prev a c [] rest
+                (prev::xs) -> cH_bound prev a c xs rest
 
 
 
