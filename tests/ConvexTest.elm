@@ -79,7 +79,7 @@ suite =
                     Expect.equal [a,b,d,f] <| Convex.cH_bound_wrapper [a,b,c,d,e,f]
         ]
     , describe "cH_bound tests"
-        [ test "Passing an empty rest list should return a list of only the passed points" <|
+        [ test "Passing an empty rest list and points that form a right turn should return a list of the passed points." <|
             \_ ->
                 let
                     a = Math.Vector2.vec2 0 0
@@ -87,8 +87,33 @@ suite =
                     c = Math.Vector2.vec2 4 0
                 in
                     Expect.equal [a,b,c] <| Convex.cH_bound a b c [] []
+        , test "Passing an empty rest list and points that do not form a right turn should return a list of only a and c." <|
+            \_ ->
+                let
+                    a = Math.Vector2.vec2 0 1 
+                    b = Math.Vector2.vec2 2 0
+                    c = Math.Vector2.vec2 4 2
+                in
+                    Expect.equal [a,c] <| Convex.cH_bound a b c [] []
+        ]
+    , describe "convexHull tests"
+        [ test "Convex hull of a triangle with vertices ordered by x value" <|
+            \_ ->
+                let
+                    a = Math.Vector2.vec2 0 0
+                    b = Math.Vector2.vec2 2 1
+                    c = Math.Vector2.vec2 4 0
+                in
+                    Expect.equal [a,c,b,a] <| Convex.convexHull [a,b,c]
         
-        
+        , test "Convex hull of a triangle with unordered vertices" <|
+            \_ ->
+                let
+                    a = Math.Vector2.vec2 0 0
+                    b = Math.Vector2.vec2 2 1
+                    c = Math.Vector2.vec2 4 0
+                in
+                    Expect.equal [a,c,b,a] <| Convex.convexHull [b,a,c]
         ]
     ]
         
