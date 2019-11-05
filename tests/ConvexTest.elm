@@ -9,9 +9,11 @@ import Convex
 
 suite : Test
 suite =
-    let a = Math.Vector2.vec2 0 0
+    let
+        a = Math.Vector2.vec2 0 0
         b = Math.Vector2.vec2 2 1
         c = Math.Vector2.vec2 4 0
+        c_greater = Math.Vector2.vec2 4 10 -- use this to produce convex hulls where b is not on the upper bound
     in
         describe "Compgeo test suite"
         [   describe "rightTurn tests"
@@ -21,10 +23,7 @@ suite =
 
             , test "Should not be recognised as a right turn" <|
                 \_ ->
-                    let
-                        c_greater = Math.Vector2.vec2 4 10
-                    in
-                        Expect.equal False (Convex.rightTurn a b c_greater)
+                    Expect.equal False (Convex.rightTurn a b c_greater)
             , test "Third Vector is on the vector a->b. Should be recognised as a right turn." <|
                 \_ ->
                     let
@@ -52,10 +51,7 @@ suite =
                         Expect.equal [a, b, c] <| Convex.cH_bound_wrapper [a, b, c]
                 ,   test "Test with 3 elements where only two vertices form the hull bound" <|
                     \_ ->
-                        let
-                            c_greater = Math.Vector2.vec2 4 10
-                        in 
-                            Expect.equal [a,c_greater] <| Convex.cH_bound_wrapper[a,b,c_greater]
+                        Expect.equal [a,c_greater] <| Convex.cH_bound_wrapper[a,b,c_greater]
                 , test "Test with >3 elements" <|
                     \_ ->
                         let
@@ -64,6 +60,14 @@ suite =
                             f = Math.Vector2.vec2 9 2
                         in
                             Expect.equal [a,b,d,f] <| Convex.cH_bound_wrapper [a,b,c,d,e,f]
+                , test "Test with >3 elements for lower bound (inverse x-order)" <| 
+                    \_ ->
+                        let
+                            d = Math.Vector2.vec2 5 2
+                            e = Math.Vector2.vec2 7 1
+                            f = Math.Vector2.vec2 9 2
+                        in
+                            Expect.equal [a,b,d,f] <| Convex.cH_bound_wrapper <| List.reverse [a,b,c,d,e,f]
                 ]
             ]
         , describe "cH_bound tests"
@@ -72,19 +76,16 @@ suite =
                     Expect.equal [a,b,c] <| Convex.cH_bound a b c [] []
             , test "Passing an empty rest list and points that do not form a right turn should return a list of only a and c." <|
                 \_ ->
-                    let
-                        c_greater = Math.Vector2.vec2 4 10
-                    in
-                        Expect.equal [a,c_greater] <| Convex.cH_bound a b c_greater [] []
+                    Expect.equal [a,c_greater] <| Convex.cH_bound a b c_greater [] []
             ]
         , describe "convexHull tests"
             [ test "Convex hull of a triangle with vertices ordered by x value" <|
                 \_ ->
-                    Expect.equal [a,c,b,a] <| Convex.convexHull [a,b,c]
+                    Expect.equal [a,c_greater,b,a] <| Convex.convexHull [a,b,c_greater]
             
             , test "Convex hull of a triangle with unordered vertices" <|
                 \_ ->
-                    Expect.equal [a,c,b,a] <| Convex.convexHull [b,a,c]
+                    Expect.equal [a,c_greater,b,a] <| Convex.convexHull [b,a,c_greater]
             ]
     ]
         
