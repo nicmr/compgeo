@@ -12,6 +12,8 @@ convexHull list =
     in
         List.append upper_bound <| Maybe.withDefault [] <| List.tail lower_bound
 
+-- Wrapper around cH_bound. Constructs and returns a vertice boundary from the passed list.
+-- The passed list should be ordered by x_value: low->high for upper bound; high->low for lower bound.
 cH_bound_wrapper : List Vec2 -> List Vec2
 cH_bound_wrapper list =
     case list of
@@ -44,10 +46,13 @@ cH_bound a b c acc rest =
                 [prev] -> cH_bound prev a c [] rest
                 (prev::xs) -> cH_bound prev a c xs rest
 
+-- compares the x-value / d0-value of two vertices
 compare_x : Vec2 -> Vec2 -> Order
 compare_x a b =
     compare (Math.Vector2.getX a) (Math.Vector2.getX b)
 
+-- Determines whether the passed vertices form a right turn or not.
+-- (Does this algorithm work only for the upper bound?)
 rightTurn : Vec2 -> Vec2 -> Vec2 -> Bool
 rightTurn a b c =
     let
