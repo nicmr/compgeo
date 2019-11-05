@@ -3,31 +3,37 @@ module Convex exposing (convexHull)
 import Math.Vector2 exposing (Vec2)
 
 type alias TurnPredicate = (Vec2 -> Vec2 -> Vec2 -> Bool)
+type Mode = Upper | Lower
 
 convexHull : List Vec2 -> List Vec2
 convexHull list =
     let
-        ordered = List.sortWith compare_x list
-        reverse = List.reverse ordered
-        upper_bound = boundWrapper rightTurnUpper ordered
-        lower_bound = boundWrapper rightTurnLower reverse
+        upper_bound = boundWrapper Upper list
+        lower_bound = boundWrapper Lower list
     in
         List.append upper_bound <| Maybe.withDefault [] <| List.tail lower_bound
 
 -- Wrapper around bound. Constructs and returns a vertice boundary from the passed list.
 -- The passed list should be ordered by x_value: low->high for upper bound; high->low for lower bound.
-boundWrapper: TurnPredicate -> List Vec2 -> List Vec2
-boundWrapper predicate list =
-    case list of
-        [] -> []
-        [a] -> [a]
-        (a::xsa) -> case xsa of
-            [] -> [a]
-            [b] -> [a, b]
-            (b::xsb) -> case xsb of
-                [] -> [a, b]
-                [c] -> bound predicate a b c [] []
-                (c::xsc) -> bound predicate a b c [] xsc
+boundWrapper: Mode -> List Vec2 -> List Vec2
+boundWrapper mode list =
+    let
+        increasing = List.sortWith compare_x list
+
+        (predicate, ordered) = case mode of
+            Upper -> (rightTurnUpper, increasing)
+            Lower -> (rightTurnLower, List.reverse increasing)
+    in  
+        case ordered of
+            [] -> []
+            [a] -> [a]
+            (a::xsa) -> case xsa of
+                [] -> [a]
+                [b] -> [a, b]
+                (b::xsb) -> case xsb of
+                    [] -> [a, b]
+                    [c] -> bound predicate a b c [] []
+                    (c::xsc) -> bound predicate a b c [] xsc
 
 
 -- Recursively calculates a single boundary of a convex hull (upper or lower)
