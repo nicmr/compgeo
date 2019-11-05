@@ -1,13 +1,20 @@
 module Convex exposing (convexHull)
+{-| This library provides you with the ability to create convex hulls from a list of vertices.
+# Commonly used
+@docs convexHull
+-}
 
 import Math.Vector2 exposing (Vec2)
+
 
 type alias TurnPredicate = (Vec2 -> Vec2 -> Vec2 -> Bool)
 type Mode = Upper | Lower
 
--- Constructs a convex hull of vectors in the passed list.
--- Returns an ordered list of the points on the hull boundary, starting with the point of the lowest x Value.
--- The last point will be identical to the first.
+
+{-| Constructs a convex hull of vectors in the passed list.
+The returned list will be an ordered list of the points on the hull boundary, starting with the point of the lowest x Value.
+The last point will be identical to the first.
+-} 
 convexHull : List Vec2 -> List Vec2
 convexHull list =
     let
@@ -15,6 +22,7 @@ convexHull list =
         lower_bound = boundWrapper Lower list
     in
         List.append upper_bound <| Maybe.withDefault [] <| List.tail lower_bound
+
 
 -- Wrapper around bound. Constructs and returns a vertice boundary from the passed list.
 boundWrapper: Mode -> List Vec2 -> List Vec2
@@ -65,6 +73,7 @@ compare_x : Vec2 -> Vec2 -> Order
 compare_x a b =
     compare (Math.Vector2.getX a) (Math.Vector2.getX b)
 
+
 -- Determines whether the passed vertices form a right turn or not.
 rightTurnUpper : Vec2 -> Vec2 -> Vec2 -> Bool
 rightTurnUpper a b c =
@@ -77,6 +86,7 @@ rightTurnUpper a b c =
             LT -> True
             EQ -> True
             GT -> False
+
 
 -- Determines whether the passed vertices form a right turn or not.
 rightTurnLower : Vec2 -> Vec2 -> Vec2 -> Bool
