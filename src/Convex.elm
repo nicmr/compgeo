@@ -5,6 +5,9 @@ import Math.Vector2 exposing (Vec2)
 type alias TurnPredicate = (Vec2 -> Vec2 -> Vec2 -> Bool)
 type Mode = Upper | Lower
 
+-- Constructs a convex hull of vectors in the passed list.
+-- Returns an ordered list of the points on the hull boundary, starting with the point of the lowest x Value.
+-- The last point will be identical to the first.
 convexHull : List Vec2 -> List Vec2
 convexHull list =
     let
@@ -14,7 +17,6 @@ convexHull list =
         List.append upper_bound <| Maybe.withDefault [] <| List.tail lower_bound
 
 -- Wrapper around bound. Constructs and returns a vertice boundary from the passed list.
--- The passed list should be ordered by x_value: low->high for upper bound; high->low for lower bound.
 boundWrapper: Mode -> List Vec2 -> List Vec2
 boundWrapper mode list =
     let
@@ -36,7 +38,8 @@ boundWrapper mode list =
                     (c::xsc) -> bound predicate a b c [] xsc
 
 
--- Recursively calculates a single boundary of a convex hull (upper or lower)
+-- Recursively calculates a single boundary of a convex hull,
+-- ensuring any given 3 consequitive points form a right turn in accordnace with the passed predicate.
 bound : TurnPredicate -> Vec2 -> Vec2 -> Vec2 -> List Vec2 -> List Vec2 -> List Vec2
 bound predicate a b c acc rest =
     let
@@ -62,11 +65,7 @@ compare_x : Vec2 -> Vec2 -> Order
 compare_x a b =
     compare (Math.Vector2.getX a) (Math.Vector2.getX b)
 
-
--- TODO: Dedup code :( 
-
 -- Determines whether the passed vertices form a right turn or not.
--- (Does this algorithm work only for the upper bound?)
 rightTurnUpper : Vec2 -> Vec2 -> Vec2 -> Bool
 rightTurnUpper a b c =
     let
@@ -79,6 +78,7 @@ rightTurnUpper a b c =
             EQ -> True
             GT -> False
 
+-- Determines whether the passed vertices form a right turn or not.
 rightTurnLower : Vec2 -> Vec2 -> Vec2 -> Bool
 rightTurnLower a b c =
     let
