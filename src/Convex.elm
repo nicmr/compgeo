@@ -7,27 +7,22 @@ convexHull list =
     let
         ordered = List.sortWith compare_x list
         reverse = List.reverse ordered
+        upper_bound = cH_bound_wrapper ordered
+        lower_bound = cH_bound_wrapper reverse
     in
-        --placeholder
-        [(Math.Vector2.vec2 1 2)]
-
-
--- upper : List Vec2 -> List Vec2
--- upper list =
-
-
+        List.append upper_bound <| Maybe.withDefault [] <| List.tail lower_bound
 
 cH_bound_wrapper : List Vec2 -> List Vec2
 cH_bound_wrapper list =
     case list of
         [] -> []
-        [x] -> [x]
+        [a] -> [a]
         (a::xsa) -> case xsa of
             [] -> [a]
-            [x] -> [a, x]
+            [b] -> [a, b]
             (b::xsb) -> case xsb of
                 [] -> [a, b]
-                [x] -> [a, b, x]
+                [c] -> cH_bound a b c [] []
                 (c::xsc) -> cH_bound a b c [] xsc
 
 
@@ -42,13 +37,12 @@ cH_bound a b c acc rest =
                 (x::xs) -> cH_bound b c x (a :: acc) xs
         False ->
             case acc of
-                [] -> [a, c]
+                [] -> case rest of
+                    [] -> [a, c]
+                    [x] -> cH_bound a c x [] []
+                    (x::xs) -> cH_bound a c x [] xs
                 [prev] -> cH_bound prev a c [] rest
                 (prev::xs) -> cH_bound prev a c xs rest
-
-
-
-
 
 compare_x : Vec2 -> Vec2 -> Order
 compare_x a b =
