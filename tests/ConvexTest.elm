@@ -66,6 +66,29 @@ suite =
                     in
                         Expect.equal [a, b,c ] <| Convex.cH_bound_wrapper [a, b, c]
             ]
+        , test "Lists with > 3 elements should return the bound of the convex hull" <|
+            \_ ->
+                let
+                    a = Math.Vector2.vec2 0 0
+                    b = Math.Vector2.vec2 2 1
+                    c = Math.Vector2.vec2 4 0
+                    d = Math.Vector2.vec2 5 2
+                    e = Math.Vector2.vec2 7 1
+                    f = Math.Vector2.vec2 9 2
+                in
+                    Expect.equal [a,b,d,f] <| Convex.cH_bound_wrapper [a,b,c,d,e,f]
+        ]
+    , describe "cH_bound tests"
+        [ test "Passing an empty rest list should return a list of only the passed points" <|
+            \_ ->
+                let
+                    a = Math.Vector2.vec2 0 0
+                    b = Math.Vector2.vec2 2 1
+                    c = Math.Vector2.vec2 4 0
+                in
+                    Expect.equal [a,b,c] <| Convex.cH_bound a b c [] []
+        
+        
         ]
     ]
         
