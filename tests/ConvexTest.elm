@@ -14,44 +14,45 @@ suite =
         b = Math.Vector2.vec2 2 1
         c = Math.Vector2.vec2 4 0
         c_greater = Math.Vector2.vec2 4 10 -- use this to produce convex hulls where b is not on the upper bound
+        boundWrapperUpper = Convex.boundWrapper Convex.rightTurnUpper
     in
         describe "Compgeo test suite"
-        [   describe "rightTurn tests"
+        [   describe "rightTurnUpper tests"
             [ test "Should be recognised as a right turn" <|
                 \_ ->
-                    Expect.equal True (Convex.rightTurn a b c)
+                    Expect.equal True (Convex.rightTurnUpper a b c)
 
             , test "Should not be recognised as a right turn" <|
                 \_ ->
-                    Expect.equal False (Convex.rightTurn a b c_greater)
+                    Expect.equal False (Convex.rightTurnUpper a b c_greater)
             , test "Third Vector is on the vector a->b. Should be recognised as a right turn." <|
                 \_ ->
                     let
                         c_on_vec = Math.Vector2.vec2 4 2
                     in
-                        Expect.equal True (Convex.rightTurn a b c_on_vec)
+                        Expect.equal True (Convex.rightTurnUpper a b c_on_vec)
             ]
 
-        , describe "ch_bound_wrapper tests"
+        , describe "boundWrapperUpper tests"
             [ test "Empty lists should return empty lists" <|
                 \_ ->
-                    Expect.equal [] <| Convex.cH_bound_wrapper []
+                    Expect.equal [] <| boundWrapperUpper []
 
             , describe "Lists with 1-2 elements should return the list as is."
                 [ test "Test with 1 element." <|
                     \_ ->
-                        Expect.equal [a] <| Convex.cH_bound_wrapper [a]
+                        Expect.equal [a] <| boundWrapperUpper [a]
                 , test "Test with 2 elements." <|
                     \_ ->
-                        Expect.equal [a, b] <| Convex.cH_bound_wrapper [a, b]
+                        Expect.equal [a, b] <| boundWrapperUpper [a, b]
                 ]
             , describe "Lists with >= 3 elements should return the bound of the convex hull" 
                 [   test "Test with 3 elements where all vertices are on the hull bound." <|
                     \_ ->
-                        Expect.equal [a, b, c] <| Convex.cH_bound_wrapper [a, b, c]
+                        Expect.equal [a, b, c] <| boundWrapperUpper [a, b, c]
                 ,   test "Test with 3 elements where only two vertices form the hull bound" <|
                     \_ ->
-                        Expect.equal [a,c_greater] <| Convex.cH_bound_wrapper[a,b,c_greater]
+                        Expect.equal [a,c_greater] <| boundWrapperUpper [a,b,c_greater]
                 , test "Test with >3 elements" <|
                     \_ ->
                         let
@@ -59,7 +60,7 @@ suite =
                             e = Math.Vector2.vec2 7 1
                             f = Math.Vector2.vec2 9 2
                         in
-                            Expect.equal [a,b,d,f] <| Convex.cH_bound_wrapper [a,b,c,d,e,f]
+                            Expect.equal [a,b,d,f] <| boundWrapperUpper [a,b,c,d,e,f]
                 , test "Test with >3 elements for lower bound (inverse x-order)" <| 
                     \_ ->
                         let
@@ -67,16 +68,16 @@ suite =
                             e = Math.Vector2.vec2 7 1
                             f = Math.Vector2.vec2 9 2
                         in
-                            Expect.equal [a,b,d,f] <| Convex.cH_bound_wrapper <| List.reverse [a,b,c,d,e,f]
+                            Expect.equal [f,d,b,a] <| boundWrapperUpper <| List.reverse [a,b,c,d,e,f]
                 ]
             ]
-        , describe "cH_bound tests"
+        , describe "bound tests"
             [ test "Passing an empty rest list and points that form a right turn should return a list of the passed points." <|
                 \_ ->
-                    Expect.equal [a,b,c] <| Convex.cH_bound a b c [] []
+                    Expect.equal [a,b,c] <| Convex.bound Convex.rightTurnUpper a b c [] []
             , test "Passing an empty rest list and points that do not form a right turn should return a list of only a and c." <|
                 \_ ->
-                    Expect.equal [a,c_greater] <| Convex.cH_bound a b c_greater [] []
+                    Expect.equal [a,c_greater] <| Convex.bound Convex.rightTurnUpper a b c_greater [] []
             ]
         , describe "convexHull tests"
             [ test "Convex hull of a triangle with vertices ordered by x value" <|
