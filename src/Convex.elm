@@ -84,7 +84,7 @@ rightTurnUpper a b c =
     in
         case compare (Math.Vector2.getY c) (Math.Vector2.getY expected) of
             LT -> True
-            EQ -> True
+            EQ -> False
             GT -> False
 
 
@@ -98,5 +98,5 @@ rightTurnLower a b c =
     in
         case compare (Math.Vector2.getY c) (Math.Vector2.getY expected) of
             LT -> False
-            EQ -> True
+            EQ -> False
             GT -> True
