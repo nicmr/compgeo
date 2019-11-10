@@ -1,4 +1,5 @@
-module VectorSet exposing (..)
+module VectorSet exposing
+    ( VectorSet, member, insert, fromList )
 
 import Dict exposing (Dict)
 import Set exposing (Set)
@@ -15,8 +16,12 @@ import Math.Vector2 exposing (Vec2, getX, getY)
 type alias VectorSet = Dict Float (Set Float)
 
 
-insert_vec : Vec2 -> VectorSet -> VectorSet
-insert_vec vec old =
+empty : VectorSet
+empty = 
+    Dict.empty
+
+insert : Vec2 -> VectorSet -> VectorSet
+insert vec old =
     let
         x = getX vec
         y = getY vec
@@ -40,3 +45,9 @@ member vec set =
                 Set.member y ys
             Nothing ->
                 False
+
+
+fromList : List Vec2 -> VectorSet
+fromList list = 
+    List.foldl insert empty list
+      
