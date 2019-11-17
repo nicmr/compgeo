@@ -1,5 +1,13 @@
 module Triangulation exposing (triangulate, isYMonotone)
+{-|
+Polygons in this module are implemented as a List Vec2 that stores an ordered list of corner vertices.
+Vertices are implemented as Vec2
+Line segments are implemented as (Vec2, Vec2), where the Vec2 represent start and end point of the line segment
 
+# Commonly used
+
+@doc triangulate, isYMonotone
+-}
 
 import Math.Vector2 exposing (Vec2, vec2, getX, getY)
 import Array exposing (Array)
@@ -13,8 +21,9 @@ type alias VectorSet = Set.Any.AnySet (Float, Float) Vec2
 -- Vertices are implemented as Vec2
 -- Line segments are implemented as (Vec2, Vec2), where the Vec2 represent start and end point of the line segment
 
--- Triangulates a polygon and returns a list of the edges of the corresponding triangles
--- Only works with y-monotone polygons so far, will return `Nothing` for non-monotone polygons.
+{-| Triangulates a polygon and returns a list of the edges of the corresponding triangles
+  Only works with y-monotone polygons so far, will return `Nothing` for non-monotone polygons.
+-}
 triangulate : List Vec2 -> Maybe (List (Vec2, Vec2))
 triangulate polygon =
     let
@@ -45,7 +54,9 @@ splitAtMax polygon =
                                 )
                                 polygon_array))
 
--- Determines if the passed polygon is y-monotone
+{-|
+Determines if the passed polygon is y-monotone
+-}
 isYMonotone : List Vec2 -> Bool
 isYMonotone sequence =
     let
