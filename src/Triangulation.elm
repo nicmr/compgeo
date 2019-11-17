@@ -19,7 +19,6 @@ triangulate : List Vec2 -> Maybe (List (Vec2, Vec2))
 triangulate polygon =
     let
         (left, right) = splitAtMax polygon
-        test = Set.Any.empty vecAsTuple |> Set.Any.insert (vec2 5 3) |> Set.Any.member (vec2 5 3)
     in 
         if isYMonotone left && isYMonotone right then
             Just <| diagonal_wrapper (Set.Any.fromList vecAsTuple left) (Set.Any.fromList vecAsTuple right) polygon
