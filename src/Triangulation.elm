@@ -1,15 +1,17 @@
-module Triangulation exposing (..)
+module Triangulation exposing (triangulate, isYMonotone)
 
 
-import Math.Vector2 exposing (Vec2, getX, getY)
+import Math.Vector2 exposing (Vec2, vec2, getX, getY)
 import Array exposing (Array)
 import Set exposing (Set)
-import VectorSet exposing (VectorSet)
+import Set.Any
+
+
+type alias VectorSet = Set.Any.AnySet (Float, Float) Vec2
 
 -- Polygons in this module are implemented as a List Vec2 that stores an ordered list of corner vertices.
 -- Vertices are implemented as Vec2
 -- Line segments are implemented as (Vec2, Vec2), where the Vec2 represent start and end point of the line segment
-
 
 -- Triangulates a polygon and returns a list of the edges of the corresponding triangles
 -- Only works with y-monotone polygons so far, will return `Nothing` for non-monotone polygons.
@@ -17,9 +19,10 @@ triangulate : List Vec2 -> Maybe (List (Vec2, Vec2))
 triangulate polygon =
     let
         (left, right) = splitAtMax polygon
+        test = Set.Any.empty vecAsTuple |> Set.Any.insert (vec2 5 3) |> Set.Any.member (vec2 5 3)
     in 
         if isYMonotone left && isYMonotone right then
-            Just <| diagonal_wrapper (VectorSet.fromList left) (VectorSet.fromList right) polygon
+            Just <| diagonal_wrapper (Set.Any.fromList vecAsTuple left) (Set.Any.fromList vecAsTuple right) polygon
         else
             Nothing
 
@@ -85,7 +88,7 @@ diagonal_wrapper left right polygon =
 diagonal : Vec2 -> Vec2 -> Vec2 -> List Vec2 -> List Vec2 -> List (Vec2, Vec2) -> VectorSet -> VectorSet -> List (Vec2,Vec2)
 diagonal p q r rest stack acc left right =
     let
-        side =  if VectorSet.member p left then
+        side =  if Set.Any.member p left then
                     left
                 else right
     in
@@ -94,8 +97,13 @@ diagonal p q r rest stack acc left right =
             [] -> (p, q) :: acc
             [last] -> diagonal r p last  [] [] ((p, r) :: acc) left right
             (next::newRest) ->
-                if VectorSet.member r side then
+                if Set.Any.member r side then
                     diagonal r p next  newRest [] ((p, r) :: acc) left right
                 else
                     diagonal r q next newRest [] ((q, r) :: acc) left right
 
+
+
+vecAsTuple : Vec2 -> (Float, Float)
+vecAsTuple vec =
+    (getX vec, getY vec)
