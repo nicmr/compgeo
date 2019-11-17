@@ -6,7 +6,9 @@ Line segments are implemented as (Vec2, Vec2), where the Vec2 represent start an
 
 # Commonly used
 
-@doc triangulate, isYMonotone
+@docs triangulate
+
+@docs isYMonotone
 -}
 
 import Math.Vector2 exposing (Vec2, vec2, getX, getY)
