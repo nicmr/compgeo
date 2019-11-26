@@ -1,4 +1,4 @@
-module Triangulation exposing (triangulate, isYMonotone)
+module Triangulation exposing (triangulate, isYMonotone, splitAtMax)
 {-|
 This module exposes functions for triangulating polygons.
 
@@ -53,10 +53,10 @@ splitAtMax polygon =
                 List.foldl (\(index_a, a) (index_b, b) -> if getY a >= getY b then (index_a, a) else (index_b, b)) x xs
                 |> Tuple.first
                 -- split into two lists at max
-                |> (\index ->   ( Array.toList <| Array.slice 0 index polygon_array
-                                , Array.toList <| Array.slice index (Array.length polygon_array
+                |> (\index ->   ( List.reverse <| Array.toList <| Array.slice 0 index polygon_array
+                                , Array.toList <| Array.slice index (Array.length polygon_array) polygon_array
                                 )
-                                polygon_array))
+                    )
 
 
 {-|
@@ -82,7 +82,7 @@ monotonePredicate : Float -> Maybe Float -> Maybe Float
 monotonePredicate x acc =
     case acc of
         Nothing -> Nothing
-        Just a -> if x<a then Just x else Nothing
+        Just a -> if x<=a then Just x else Nothing
 
 
 -- wrapper around tail recursive diagonal function
