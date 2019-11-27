@@ -19,13 +19,14 @@ suite =
     [ describe "triangulate tests"
         [ test "y-monotone rect" <|
             \_ ->
-                Expect.equal (Just [(a,c)]) <| Triangulation.triangulate [a,b,c,d]
+                Expect.equal (Just [(c,a)]) <| Triangulation.triangulate [a,b,c,d]
+        , test "non y-monotone rect" <|
+            \_ ->
+                Expect.equal Nothing <| Triangulation.triangulate [a,d,b,c]
+        , test "just one element" <|
+            \_ ->
+                Expect.equal (Just[]) <| Triangulation.triangulate [a]
         ]
-    -- , describe "split at max test"
-    --     [ test "split polygon with 4 nodes" <|
-    --         \_ ->
-    --             Expect.equal () <| Triangulation.splitAtMax [a,b,c,d]
-    --     ]
     , describe "isYMonotone tests"
         [ test "test with vertices with different y values" <|
             \_ ->
