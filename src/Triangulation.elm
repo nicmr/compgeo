@@ -32,9 +32,10 @@ triangulate : List Vec2 -> Maybe (List (Vec2, Vec2))
 triangulate polygon =
     let
         (left, right) = splitAtMax polygon
+        sortedByY = List.sortBy (\vec -> getY vec) polygon
     in 
         if isYMonotone left && isYMonotone right then
-            Just <| diagonal_wrapper (Set.Any.fromList vecAsTuple left) (Set.Any.fromList vecAsTuple right) polygon
+            Just <| diagonal_wrapper (Set.Any.fromList vecAsTuple left) (Set.Any.fromList vecAsTuple right) sortedByY
         else
             Nothing
 
