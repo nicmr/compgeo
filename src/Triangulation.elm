@@ -1,4 +1,4 @@
-module Triangulation exposing (triangulate, isYMonotone, splitAtMax)
+module Triangulation exposing (triangulate, isYMonotone)
 {-|
 This module exposes functions for triangulating polygons.
 
