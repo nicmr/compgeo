@@ -62,6 +62,7 @@ splitAtMax polygon =
 {-|
 Determines if the passed List Vec2 is y-monotone.
 -}
+-- currently only respects monotone increase, not monotone decrease
 isYMonotone : List Vec2 -> Bool
 isYMonotone sequence =
     let
@@ -73,16 +74,32 @@ isYMonotone sequence =
             [] -> True
             [_] -> True
             (y::ys) ->
-                case List.foldl monotonePredicate (Just y) ys of
-                    Just _ -> True
-                    Nothing -> False
+                case List.foldl monotonePredicate (Unknown y) ys of
+                    NotMonotone -> False
+                    _ -> True -- catches both weak incrementing and decrementing relations
 
 
-monotonePredicate : Float -> Maybe Float -> Maybe Float
+-- used to represent the type of monotony found my monotonePredicate
+type Monotony = NotMonotone | Inc Float | Dec Float | Unknown Float
+
+
+-- predicate that ensures a value is weak monotone compared to the value stored in the acc.
+-- can be run with either foldl or foldr
+-- will accept both weak monotone increasing and weak monotone decreasing order of values
+monotonePredicate : Float -> Monotony -> Monotony
 monotonePredicate x acc =
-    case acc of
-        Nothing -> Nothing
-        Just a -> if x<=a then Just x else Nothing
+    case acc of 
+        NotMonotone -> NotMonotone
+        Unknown a ->
+            if x < a then Inc x
+            else if x > a then Dec x
+            else Unknown x
+        Inc a ->
+            if x<=a then Inc x
+            else NotMonotone
+        Dec a ->
+            if x>=a then Dec x
+            else NotMonotone
 
 
 -- wrapper around tail recursive diagonal function
@@ -110,7 +127,8 @@ diagonal p q r rest stack acc left right =
         -- TODO: check for edges outside the polygon ( => use stack)
         case rest of
             [] -> (p, q) :: acc
-            [last] -> diagonal r p last  [] [] ((p, r) :: acc) left right
+            -- [last] -> diagonal r p last  [] [] ((p, r) :: acc) left right --results in duplicate lines
+            [last] -> diagonal r p last  [] [] acc left right
             (next::newRest) ->
                 if Set.Any.member r side then
                     diagonal r p next  newRest [] ((p, r) :: acc) left right
