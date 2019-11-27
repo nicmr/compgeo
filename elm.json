@@ -3,7 +3,7 @@
     "name": "nicmr/compgeo",
     "summary": "An Elm library for computational geometry",
     "license": "BSD-3-Clause",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "exposed-modules": [
         "Convex",
         "Triangulation"
